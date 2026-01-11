@@ -1,0 +1,187 @@
+# MobileLLM Model Architecture Configuration
+model_architecture:
+  # Time embedding configuration
+  time_steps:
+    trento: 144
+    shanghai: 144
+    milan: 144
+    default: 144
+  
+  # Channel configuration
+  gpt_channel: 256
+  to_gpt_channel: 768
+  
+  # Node embedding dimension
+  node_dim: 64
+  
+  # Feature indices configuration
+  feature_indices:
+    time_day: 1    # Time feature index (2nd feature, index 1)
+    week_emb: 2    # Week index feature index (3rd feature, index 2)
+  
+  # Adjacency matrix configuration
+  adjacency_matrix:
+    # Adjacency matrix type
+    type: "predefined"  # Fixed to predefined file loading
+    
+    # Distance threshold configuration (for distance_based type)
+    distance_threshold:
+      method: "percentile"  # Options: "percentile", "fixed", "adaptive"
+      value: 20  # 20th percentile as threshold
+      fixed_threshold: 5.0  # Fixed threshold (km), used when method is "fixed"
+    
+    # Adjacency matrix normalization method
+    normalization:
+      method: "symmetric"  # Options: "symmetric", "row_normalized", "softmax", "none"
+      add_self_loop: true  # Whether to add self-loop (diagonal set to 1)
+      epsilon: 1e-6  # Numerical stability parameter
+    
+    # Adjacency matrix preprocessing
+    preprocessing:
+      symmetrize: true  # Whether to symmetrize adjacency matrix
+      sparsify: false   # Whether to sparsify (remove small weight edges)
+      sparsity_threshold: 0.01  # Sparsification threshold
+    
+    # Adjacency matrix file path configuration
+    file_paths:
+      milan: "../data/milan/adj_mx.pkl"
+      shanghai: "../data/shanghai/adj_mx.pkl"
+      trento: "../data/trento/adj_mx.pkl"
+      default: "../data/default/adj_mx.pkl"
+    
+    # Adjacency matrix generation parameters
+    generation:
+      # Geographic distance calculation
+      haversine:
+        earth_radius: 6371  # Earth radius (km)
+        unit: "km"  # Distance unit
+      
+      # Correlation calculation (for correlation type)
+      correlation:
+        method: "pearson"  # Options: "pearson", "spearman", "kendall"
+        min_correlation: 0.1  # Minimum correlation coefficient threshold
+      
+      # Random adjacency matrix (for random type)
+      random:
+        sparsity: 0.1  # Sparsity (1-density)
+        symmetric: true  # Whether symmetric
+  
+  # GPT model configuration
+  gpt_model:
+    # Basic configuration
+    model_name: "gpt2"
+    model_type: "gpt2"
+    output_attentions: true
+    output_hidden_states: true
+    
+    # LoRA configuration
+    lora:
+      r: 16
+      lora_alpha: 32
+      lora_dropout: 0.0
+      target_modules: ['q_attn', 'c_attn']
+      bias: "none"
+  
+  # Regularization configuration
+  dropout: 0.1
+  activation: "leaky_relu"
+
+# MobileLLM Dataset Configuration
+MILAN:
+  num_nodes: 177
+  in_steps: 12
+  out_steps: 12
+
+  train_size: 0.7
+  val_size: 0.1
+
+  time_of_day: False
+  day_of_week: False
+
+  lr: 0.001
+  weight_decay: 0.0001
+  milestones: [20, 40, 60]
+  lr_decay_rate: 0.1
+  batch_size: 32
+  max_epochs: 100
+  early_stop: 20
+  use_cl: False
+  cl_step_size: 2500
+
+  model_args:
+    num_nodes: 177
+    in_steps: 12
+    out_steps: 12
+    input_dim: 5
+    output_dim: 3
+    gpt_layers: 6
+    device: "cuda:0"
+    dataset_name: "milan"
+  
+  feature_names: ["internet", "sms", "calls"]
+
+SHANGHAI:
+  num_nodes: 320
+  in_steps: 12
+  out_steps: 12
+
+  train_size: 0.7
+  val_size: 0.1
+
+  time_of_day: False
+  day_of_week: False
+
+  lr: 0.001
+  weight_decay: 0.0001
+  milestones: [20, 40, 60]
+  lr_decay_rate: 0.1
+  batch_size: 16
+  max_epochs: 200
+  early_stop: 20
+  use_cl: False
+  cl_step_size: 2500
+
+  model_args:
+    num_nodes: 320
+    in_steps: 12
+    out_steps: 12
+    input_dim: 4
+    output_dim: 2
+    gpt_layers: 6
+    device: "cuda:0"
+    dataset_name: "shanghai"
+  
+  feature_names: ["call_duration", "call_count"]
+
+TRENTO:
+  num_nodes: 94
+  in_steps: 12
+  out_steps: 12
+
+  train_size: 0.7
+  val_size: 0.1
+
+  time_of_day: False
+  day_of_week: False
+
+  lr: 0.001
+  weight_decay: 0.0001
+  milestones: [20, 40, 60]
+  lr_decay_rate: 0.1
+  batch_size: 32
+  max_epochs: 200
+  early_stop: 20
+  use_cl: False
+  cl_step_size: 2500
+
+  model_args:
+    num_nodes: 94
+    in_steps: 12
+    out_steps: 12
+    input_dim: 5
+    output_dim: 3
+    gpt_layers: 6
+    device: "cuda:0"
+    dataset_name: "trento"
+  
+  feature_names: ["internet", "sms", "calls"] 
