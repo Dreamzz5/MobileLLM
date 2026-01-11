@@ -33,23 +33,21 @@ import sys
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
-import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import torch
 import torch.nn as nn
 import yaml
 from torchinfo import summary
 
 from mobilellm import (
-    MobileLLM,
-    MaskedMAELoss,
     RMSE_MAE_R2,
+    CustomJSONEncoder,
+    MaskedMAELoss,
+    MobileLLM,
     get_dataloaders,
     print_log,
     seed_everything,
     set_cpu_num,
-    CustomJSONEncoder,
 )
 
 
@@ -397,7 +395,7 @@ def main() -> None:
     # Configuration
     dataset = args.dataset.upper()
     model_name = args.model
-    data_path = f"src/data/{dataset.lower()}"
+    data_path = f"data/{dataset.lower()}"
 
     # Load configuration
     config_file = "configs/MobileLLM.yaml"
@@ -422,7 +420,7 @@ def main() -> None:
 
     # Setup logging
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    log_path = "src/logs"
+    log_path = "logs"
     os.makedirs(log_path, exist_ok=True)
 
     log_filename = f"{model_name}-{dataset}-{timestamp}.log"
@@ -443,7 +441,7 @@ def main() -> None:
     print_log("", log=[log_file])  # Empty line
 
     # Setup model saving
-    save_path = "saved_models"
+    save_path = "models"
     os.makedirs(save_path, exist_ok=True)
 
     save_filename = f"{model_name}-{dataset}-{timestamp}.pt"

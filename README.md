@@ -44,10 +44,14 @@ MobileLLM/
 ├── mobilellm/              # Core implementation
 │   ├── MobileLLM.py       # Model architecture
 │   ├── data_prepare.py    # Data processing
-│   └── metrics.py         # Evaluation
+│   ├── metrics.py         # Evaluation metrics
+│   └── utils.py           # Utility functions
+├── configs/                # Configuration files
+│   └── MobileLLM.yaml     # Model configuration
 ├── train.py               # Training script
-├── MobileLLM.yaml         # Configuration
-└── requirements.txt       # Dependencies
+├── requirements.txt       # Dependencies
+├── pyproject.toml         # Project metadata
+└── README.md              # Documentation
 ```
 
 ## License
